@@ -17,7 +17,7 @@ class ClassInternalConfigurationDTO:
     children: list["ClassInternalConfigurationDTO"]
 
 
-class BaseStatioInternalConfigurationCreator:
+class InternalConfigurationCreator:
     @classmethod
     def create(cls, input_file: str, output_file: str) -> None:
         internal_configuration = cls._parse_input(input_file)
@@ -25,8 +25,8 @@ class BaseStatioInternalConfigurationCreator:
 
     @staticmethod
     def _parse_input(input_file: str) -> dict[str, ClassInternalConfigurationDTO]:
-        external_configuration_xml = ET.parse(input_file)
-        root = external_configuration_xml.getroot()
+        tree = ET.parse(input_file)
+        root = tree.getroot()
 
         classes_map: dict[str, ClassInternalConfigurationDTO] = {}
 

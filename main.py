@@ -1,17 +1,17 @@
 import os
 from pathlib import Path
 
-from artifact_generators.base_station_internal_configuration import (
-    BaseStatioInternalConfigurationCreator,
-)
-from artifact_generators.base_station_meta_information import (
-    BaseStationMetaInformationCreator,
-)
 from artifact_generators.config_patcher import ConfigPatcher
+from artifact_generators.internal_configuration import (
+    InternalConfigurationCreator,
+)
+from artifact_generators.meta_information import (
+    MetaInformationCreator,
+)
 
 
 def generate_artifacts(input_dir: str, output_dir: str) -> None:
-    BaseStatioInternalConfigurationCreator.create(
+    InternalConfigurationCreator.create(
         os.path.join(
             input_dir,
             "impulse_test_input.xml",
@@ -21,7 +21,7 @@ def generate_artifacts(input_dir: str, output_dir: str) -> None:
             "config.xml",
         ),
     )
-    BaseStationMetaInformationCreator.create(
+    MetaInformationCreator.create(
         os.path.join(
             input_dir,
             "impulse_test_input.xml",
