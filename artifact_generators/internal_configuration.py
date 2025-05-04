@@ -18,14 +18,16 @@ class ClassInternalConfigurationDTO:
 
 
 class InternalConfigurationCreator:
-    @classmethod
-    def create(cls, input_file: str, output_file: str) -> None:
-        internal_configuration = cls._parse_input(input_file)
-        cls._write_internal_configuration(internal_configuration, output_file)
+    def __init__(self, input_file_path: str, output_file_path: str) -> None:
+        self.input_file_path = input_file_path
+        self.output_file_path = output_file_path
 
-    @staticmethod
-    def _parse_input(input_file: str) -> dict[str, ClassInternalConfigurationDTO]:
-        tree = ET.parse(input_file)
+    def create(self) -> None:
+        internal_configuration = self._parse_input_file()
+        self._write_internal_configuration_to_xml(internal_configuration)
+
+    def _parse_input_file(self) -> dict[str, ClassInternalConfigurationDTO]:
+        tree = ET.parse(self.input_file_path)
         root = tree.getroot()
 
         classes_map: dict[str, ClassInternalConfigurationDTO] = {}
@@ -50,23 +52,18 @@ class InternalConfigurationCreator:
 
         return classes_map
 
-    @classmethod
-    def _write_internal_configuration(
-        cls, internal_configuration: dict[str, ClassInternalConfigurationDTO], output_file: str
+    def _write_internal_configuration_to_xml(
+        self,
+        internal_configuration: dict[str, ClassInternalConfigurationDTO],
     ) -> None:
-        root = cls._build_internal_configuration_tree("BTS", internal_configuration)
+        root = self._build_internal_configuration_tree("BTS", internal_configuration)
+        pretty_xml_string = self._format_xml(ET.tostring(root, encoding="utf-8"))
 
-        rough_string = ET.tostring(root, encoding="utf-8")
-        pretty_xml = minidom.parseString(rough_string).toprettyxml(indent="    ")
-        pretty_xml = re.sub(r"^<\?xml[^>]*\?>\s*\n?", "", pretty_xml)  # убираем первую строку из xml
-        pretty_xml = cls._convert_self_closing_tags(pretty_xml)
+        with open(self.output_file_path, "w", encoding="utf-8") as f:
+            f.write(pretty_xml_string)
 
-        with open(output_file, "w", encoding="utf-8") as f:
-            f.write(pretty_xml)
-
-    @classmethod
     def _build_internal_configuration_tree(
-        cls,
+        self,
         class_name: str,
         internal_configuration: dict[str, ClassInternalConfigurationDTO],
     ) -> ET.Element:
@@ -77,9 +74,15 @@ class InternalConfigurationCreator:
             attr_elem.text = attr.type
 
         for child in internal_configuration[class_name].children:
-            child_elem = cls._build_internal_configuration_tree(child.name, internal_configuration)
+            child_elem = self._build_internal_configuration_tree(child.name, internal_configuration)
             elem.append(child_elem)
         return elem
+
+    @classmethod
+    def _format_xml(cls, xml_string: str) -> str:
+        pretty_xml = minidom.parseString(xml_string).toprettyxml(indent=" " * 4)
+        pretty_xml = re.sub(r"^<\?xml[^>]*\?>\s*\n?", "", pretty_xml)  # убираем первую строку из xml
+        return cls._convert_self_closing_tags(pretty_xml)
 
     @staticmethod
     def _convert_self_closing_tags(xml_text: str) -> str:

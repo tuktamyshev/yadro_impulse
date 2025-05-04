@@ -2,23 +2,27 @@ import json
 
 
 class ConfigPatcher:
-    @classmethod
-    def patch_config(
-        cls,
+    def __init__(
+        self,
         config_input_file: str,
         patched_config_input_file: str,
         delta_output_file: str,
         res_patched_config_output_file: str,
     ) -> None:
-        cls._create_delta_json(config_input_file, patched_config_input_file, delta_output_file)
-        cls._create_res_patched_config_json(config_input_file, delta_output_file, res_patched_config_output_file)
+        self.config_input_file = config_input_file
+        self.patched_config_input_file = patched_config_input_file
+        self.delta_output_file = delta_output_file
+        self.res_patched_config_output_file = res_patched_config_output_file
 
-    @staticmethod
-    def _create_delta_json(config_input_file: str, patched_config_input_file: str, delta_output_file: str) -> None:
-        with open(config_input_file, "r") as f:
+    def patch_config(self) -> None:
+        self._create_delta_json()
+        self._create_res_patched_config_json()
+
+    def _create_delta_json(self) -> None:
+        with open(self.config_input_file, "r") as f:
             original = json.load(f)
 
-        with open(patched_config_input_file, "r") as f:
+        with open(self.patched_config_input_file, "r") as f:
             patched = json.load(f)
 
         additions = []
@@ -37,17 +41,14 @@ class ConfigPatcher:
 
         delta = {"additions": additions, "deletions": deletions, "updates": updates}
 
-        with open(delta_output_file, "w", encoding="utf-8") as f:
+        with open(self.delta_output_file, "w", encoding="utf-8") as f:
             json.dump(delta, f, indent=4, ensure_ascii=False)
 
-    @staticmethod
-    def _create_res_patched_config_json(
-        config_input_file: str, delta_file: str, res_patched_config_output_file: str
-    ) -> None:
-        with open(config_input_file, "r") as f:
+    def _create_res_patched_config_json(self) -> None:
+        with open(self.config_input_file, "r") as f:
             config = json.load(f)
 
-        with open(delta_file, "r") as f:
+        with open(self.delta_output_file, "r") as f:
             delta = json.load(f)
 
         for key in delta["deletions"]:
@@ -59,5 +60,5 @@ class ConfigPatcher:
         for addition in delta["additions"]:
             config[addition["key"]] = addition["value"]
 
-        with open(res_patched_config_output_file, "w", encoding="utf-8") as f:
+        with open(self.res_patched_config_output_file, "w", encoding="utf-8") as f:
             json.dump(config, f, indent=4, ensure_ascii=False)

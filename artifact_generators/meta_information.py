@@ -20,14 +20,16 @@ class ClassMetaInformationDTO:
 
 
 class MetaInformationCreator:
-    @classmethod
-    def create(cls, input_file: str, output_file: str) -> None:
-        meta_information = cls._parse_input(input_file)
-        cls._write_meta_information(meta_information, output_file)
+    def __init__(self, input_file_path: str, output_file_path: str) -> None:
+        self.input_file_path = input_file_path
+        self.output_file_path = output_file_path
 
-    @staticmethod
-    def _parse_input(input_file: str) -> dict[str, ClassMetaInformationDTO]:
-        tree = ET.parse(input_file)
+    def create(self) -> None:
+        meta_information = self._parse_input()
+        self._write_meta_information(meta_information)
+
+    def _parse_input(self) -> dict[str, ClassMetaInformationDTO]:
+        tree = ET.parse(self.input_file_path)
         root = tree.getroot()
 
         classes_map: dict[str, ClassMetaInformationDTO] = {}
@@ -73,8 +75,7 @@ class MetaInformationCreator:
 
         return classes_map
 
-    @staticmethod
-    def _write_meta_information(meta_information: dict[str, ClassMetaInformationDTO], output_file: str) -> None:
+    def _write_meta_information(self, meta_information: dict[str, ClassMetaInformationDTO]) -> None:
         result = []
         for _, class_ in meta_information.items():
             parameters = [{"name": param.name, "type": param.type} for param in class_.parameters]
@@ -90,5 +91,5 @@ class MetaInformationCreator:
                 obj["max"] = class_.max
             result.append(obj)
 
-        with open(output_file, "w", encoding="utf-8") as f:
+        with open(self.output_file_path, "w", encoding="utf-8") as f:
             json.dump(result, f, indent=4, ensure_ascii=False)

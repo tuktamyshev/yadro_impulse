@@ -11,7 +11,7 @@ from artifact_generators.meta_information import (
 
 
 def generate_artifacts(input_dir: str, output_dir: str) -> None:
-    InternalConfigurationCreator.create(
+    InternalConfigurationCreator(
         os.path.join(
             input_dir,
             "impulse_test_input.xml",
@@ -20,8 +20,8 @@ def generate_artifacts(input_dir: str, output_dir: str) -> None:
             output_dir,
             "config.xml",
         ),
-    )
-    MetaInformationCreator.create(
+    ).create()
+    MetaInformationCreator(
         os.path.join(
             input_dir,
             "impulse_test_input.xml",
@@ -30,8 +30,8 @@ def generate_artifacts(input_dir: str, output_dir: str) -> None:
             output_dir,
             "meta.json",
         ),
-    )
-    ConfigPatcher.patch_config(
+    ).create()
+    ConfigPatcher(
         os.path.join(
             input_dir,
             "config.json",
@@ -48,7 +48,7 @@ def generate_artifacts(input_dir: str, output_dir: str) -> None:
             output_dir,
             "res_patched_config.json",
         ),
-    )
+    ).patch_config()
 
 
 if __name__ == "__main__":
