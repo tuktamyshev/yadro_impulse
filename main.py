@@ -37,8 +37,16 @@ def generate_artifacts(input_dir: str, output_dir: str) -> None:
             "config.json",
         ),
         os.path.join(
-            output_dir,
+            input_dir,
             "patched_config.json",
+        ),
+        os.path.join(
+            output_dir,
+            "delta.json",
+        ),
+        os.path.join(
+            output_dir,
+            "res_patched_config.json",
         ),
     )
 
