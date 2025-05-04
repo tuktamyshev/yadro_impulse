@@ -1,0 +1,24 @@
+[tool.ruff]
+src = ["."]
+lint.select = [
+    'E',  # pycodestyle errors
+    'W',  # pycodestyle warnings
+    'F',  # pyflakes
+    'I',  # isort
+    'Q',  # quotes
+    'TID',  # tidy imports
+    'ANN',  # annotations
+    'B',  # bugbear
+    'SIM',  # simplify
+    "T",  # Pyright-inspired type checks
+]
+lint.ignore = ['B008', 'B904', 'SIM105', 'B007']
+exclude = [
+    '.venv',
+]
+
+line-length = 120
+indent-width = 4
+target-version = 'py312'
+
+preview = true
